@@ -1,0 +1,3 @@
+[submodule "dep/bluecsr"]
+	path = dep/bluecsr
+	url = https://github.com/timksf/bluecsr.git

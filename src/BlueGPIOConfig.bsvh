@@ -1,0 +1,7 @@
+`ifndef BLUEGPIO_WIDTH
+`define BLUEGPIO_WIDTH 8
+`endif
+
+`ifndef BLUEGPIO_ADDR_WIDTH
+`define BLUEGPIO_ADDR_WIDTH 8
+`endif
