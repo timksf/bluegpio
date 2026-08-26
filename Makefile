@@ -11,12 +11,17 @@ CONFIG_TAG := gpio$(GPIO_WIDTH)-addr$(ADDR_WIDTH)
 BUILD_DIR := build/$(CONFIG_TAG)
 SIM_DIR := sim/$(CONFIG_TAG)
 VERILOG_DIR := verilog/$(CONFIG_TAG)
+DOC_BUILD_DIR := build/docs
+DOC_SIM_DIR := sim/docs
+DOC_DIR := docs
+DOC_FILE := $(DOC_DIR)/register-map.md
 
 TEST_TOP := mkTestGPIO
 DOC_TOP := mkGPIOCSRMarkdown
 APB_TOP := mkBlueGPIOAPB
 AXI4LITE_TOP := mkBlueGPIOAXI4Lite
 EXE := $(BUILD_DIR)/$(TEST_TOP)
+DOC_EXE := $(DOC_BUILD_DIR)/$(DOC_TOP)
 
 BLUEFABRIC_BSV_PATH := $(BLUEFABRIC_DIR)/src:$(BLUEFABRIC_DIR)/src/common
 BLUEFABRIC_BSV_PATH := $(BLUEFABRIC_BSV_PATH):$(BLUEFABRIC_DIR)/src/apb
@@ -70,10 +75,18 @@ axi4lite: $(VERILOG_DIR)/axi4lite/$(AXI4LITE_TOP).v
 
 verilog: apb axi4lite
 
-docs: | deps
-	@mkdir -p $(BUILD_DIR)
-	@$(BSC) -p $(BSV_PATH) -bdir $(BUILD_DIR) -sim -u test/DocGPIO.bsv
-	@$(BSC) -p $(BSV_PATH) -bdir $(BUILD_DIR) -sim -suppress-warnings G0024 -g $(DOC_TOP) test/DocGPIO.bsv
+$(DOC_EXE): $(SOURCES) $(DEPENDENCY_SOURCES) | deps
+	@mkdir -p $(DOC_BUILD_DIR) $(DOC_SIM_DIR)
+	$(BSC) -p $(BSV_PATH) -bdir $(DOC_BUILD_DIR) -sim -suppress-warnings G0024 \
+		-u -g $(DOC_TOP) test/DocGPIO.bsv
+	$(BSC) -p $(BSV_PATH) -bdir $(DOC_BUILD_DIR) -simdir $(DOC_SIM_DIR) \
+		-sim -e $(DOC_TOP) -o $(DOC_EXE)
+
+$(DOC_FILE): $(DOC_EXE)
+	@mkdir -p $(DOC_DIR)
+	./$(DOC_EXE)
+
+docs: $(DOC_FILE)
 
 check: sim verilog
 

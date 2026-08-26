@@ -93,6 +93,8 @@ definition with:
 make docs
 ```
 
+The generated file is `docs/register-map.md`.
+
 Run the simulation test with:
 
 ```sh
